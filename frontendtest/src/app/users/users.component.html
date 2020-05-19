@@ -1,0 +1,170 @@
+<div class="container mt-4">
+  <h1 class="mb-4">Users</h1>
+  <div class="d-flex justify-content-between">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="openModal(addoredit)"
+    >
+      <i class="fa fa-plus"></i> Add User
+    </button>
+    <div>
+      Search :
+      <input type="text" />
+    </div>
+  </div>
+  <div class="mt-5" *ngIf="this.Users.length === 0">
+    <h2>There are no user at the moment</h2>
+  </div>
+
+  <div class="row mt-3" *ngIf="this.Users.length > 0">
+    <div class="col-12">
+      <table class="table table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>Name</th>
+            <th>Family</th>
+            <th># of Items</th>
+            <th>Birthday</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of this.Users; let i = index">
+            <td>{{ user.Name }}</td>
+            <td>{{ user.Family }}</td>
+            <td>{{ user.ItemNum }}</td>
+            <td>
+              <ng-container *ngIf="user.Birthday">{{
+                convertLocalDateToDate(user.Birthday).toLocaleDateString()
+              }}</ng-container>
+            </td>
+            <td>
+              <div class="d-flex justify-content-start">
+                <i
+                  class="fa fa-trash text-danger mr-2"
+                  style="cursor: pointer; font-size: 1.5em;"
+                  (click)="delete(i)"
+                ></i>
+
+                <i
+                  class="fa fa-edit text-primary ml-2"
+                  style="cursor: pointer; font-size: 1.5em;"
+                  (click)="openModal(addoredit); setEditUser(i)"
+                ></i>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <ng-template #addoredit>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left" [hidden]="editingIndex !== undefined">
+        Add User
+      </h4>
+      <h4 class="modal-title pull-left" [hidden]="editingIndex === undefined">
+        Edit User
+      </h4>
+      <button
+        type="button"
+        class="close pull-right"
+        aria-label="Close"
+        (click)="cancel()"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form #addeditform="ngForm" autocomplete="off">
+        <input
+          [(ngModel)]="name"
+          type="text"
+          id="name"
+          name="name"
+          class="form-control"
+          placeholder="Name"
+          required="true"
+          #firstName="ngModel"
+        />
+        <div
+          *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)"
+          class="text-danger"
+        >
+          <span *ngIf="firstName.errors.required">
+            Name is required.
+          </span>
+        </div>
+        <input
+          [(ngModel)]="family"
+          type="text"
+          id="family"
+          name="family"
+          class="form-control mt-3"
+          placeholder="Family name"
+          required="true"
+          #familyName="ngModel"
+        />
+        <div
+          *ngIf="familyName.invalid && (familyName.dirty || familyName.touched)"
+          class="text-danger"
+        >
+          <span *ngIf="familyName.errors.required">
+            Family name is required.
+          </span>
+        </div>
+        <input
+          [(ngModel)]="itemNum"
+          type="number"
+          id="itemNum"
+          name="itemNum"
+          class="form-control mt-3"
+          placeholder="# of Items"
+          required="false"
+        />
+        <input
+          readonly="true"
+          style="background-color: white;"
+          [(ngModel)]="birthday"
+          type="text"
+          id="birthday"
+          name="birthday"
+          placeholder="Datepicker"
+          class="form-control my-3"
+          bsDatepicker
+          [bsConfig]="{
+            isAnimated: true,
+            dateInputFormat: 'DD/MM/YYYY',
+            maxDate: this.today
+          }"
+        />
+      </form>
+      <div class="mt-3">
+        <button
+          [disabled]="!this.addeditform.valid"
+          class="btn btn-outline-success"
+          [hidden]="!(editingIndex === null || editingIndex === undefined)"
+          (click)="addUser()"
+        >
+          Add&nbsp;<i class="fa fa-check" *ngIf="this.addeditform.valid"></i>
+        </button>
+        <button
+          [disabled]="!this.addeditform.valid"
+          class="btn btn-outline-success mr-2"
+          [hidden]="editingIndex === null || editingIndex === undefined"
+          (click)="editUser()"
+        >
+          Save&nbsp;<i class="fa fa-check" *ngIf="this.addeditform.valid"></i>
+        </button>
+        <button
+          class="btn btn-outline-secondary"
+          (click)="cancel()"
+          [hidden]="editingIndex === null || editingIndex === undefined"
+        >
+          Cancel&nbsp;<i class="fa fa-times-circle"></i>
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</div>
